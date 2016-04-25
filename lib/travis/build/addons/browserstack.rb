@@ -20,13 +20,12 @@ module Travis
             end
 
             sh.echo "Installing BrowserStack Local", ansi: :yellow
-            sh.if "$(uname) = 'Linux'" do
+            case config[:os]
+            when 'linux'
               bin_package = "#{BROWSERSTACK_BIN_FILE}-linux-x64.zip"
-            end
-            sh.elif "$(uname) = 'Darwin'" do
+            when 'osx'
               bin_package = "#{BROWSERSTACK_BIN_FILE}-darwin-x64.zip"
-            end
-            sh.else do
+            else
               sh.echo "Unsupported platform: $TRAVIS_OS_NAME.", ansi: :yellow
               return
             end

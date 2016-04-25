@@ -10,17 +10,17 @@ describe Travis::Build::Addons::BrowserStack, :sexp do
   before       { addon.before_before_script }
 
   shared_examples_for 'installs browserstack local' do
-    it 'sets BROWSERSTACK_KEY and BROWSERSTACK_LOCAL' do
-      should include_sexp [:export, ["#{described_class::ENV_KEY}", config[:access_key]]]
-      should include_sexp [:export, ["#{described_class::ENV_LOCAL}", 'true']]
-    end
-
     zip_package = "#{described_class::BROWSERSTACK_BIN_FILE}-linux-x64.zip"
     it { should include_sexp [:echo, "Installing BrowserStack Local", ansi: :yellow] }
     it { should include_sexp [:cmd, "mkdir -p #{described_class::BROWSERSTACK_HOME}"] }
     it { should include_sexp [:cmd, "wget -O /tmp/#{zip_package} #{described_class::BROWSERSTACK_BIN_URL}/#{zip_package}", echo: true, timing: true, retry: true] }
     it { should include_sexp [:cmd, "unzip -d #{described_class::BROWSERSTACK_HOME}/ /tmp/#{zip_package} 2>&1 > /dev/null"] }
     it { should include_sexp [:chmod, ["+x", "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal"]] }
+
+    it 'sets BROWSERSTACK_KEY and BROWSERSTACK_LOCAL' do
+      should include_sexp [:export, ["#{described_class::ENV_KEY}", config[:access_key]]]
+      should include_sexp [:export, ["#{described_class::ENV_LOCAL}", 'true']]
+    end
   end
 
   describe 'without access_key' do
@@ -30,42 +30,42 @@ describe Travis::Build::Addons::BrowserStack, :sexp do
   end
 
   describe 'with access_key' do
-    let(:config) { { access_key: 'accesskey' } }
+    let(:config) { { os: 'linux', access_key: 'accesskey' } }
 
     it_behaves_like 'installs browserstack local'
     it { should include_sexp [:cmd, "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal -d start #{config[:access_key]} -localIdentifier $BROWSERSTACK_LOCAL_IDENTIFIER"] }
   end
 
   describe 'with access_key and folder path' do
-    let(:config) { { access_key: 'accesskey', folder: 'path/to/user/folder' } }
+    let(:config) { { os: 'linux', access_key: 'accesskey', folder: 'path/to/user/folder' } }
 
     it_behaves_like 'installs browserstack local'
     it { should include_sexp [:cmd, "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal -d start #{config[:access_key]} -localIdentifier $BROWSERSTACK_LOCAL_IDENTIFIER -f #{config[:folder]}"] }
   end
 
   describe 'with access_key and force_local' do
-    let(:config) { { access_key: 'accesskey', force_local: true } }
+    let(:config) { { os: 'linux', access_key: 'accesskey', force_local: true } }
 
     it_behaves_like 'installs browserstack local'
     it { should include_sexp [:cmd, "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal -d start #{config[:access_key]} -localIdentifier $BROWSERSTACK_LOCAL_IDENTIFIER -forceLocal"] }
   end
 
   describe 'with access_key and local_identifier' do
-    let(:config) { { access_key: 'accesskey', local_identifier: '123' } }
+    let(:config) { { os: 'linux', access_key: 'accesskey', local_identifier: '123' } }
 
     it_behaves_like 'installs browserstack local'
     it { should include_sexp [:cmd, "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal -d start #{config[:access_key]} -localIdentifier #{config[:local_identifier]}"] }
   end
 
   describe 'with access_key and proxy settings' do
-    let(:config) { { access_key: 'accesskey', proxy_host: 'localhost', proxy_port: 1234 } }
+    let(:config) { { os: 'linux', access_key: 'accesskey', proxy_host: 'localhost', proxy_port: 1234 } }
 
     it_behaves_like 'installs browserstack local'
     it { should include_sexp [:cmd, "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal -d start #{config[:access_key]} -localIdentifier $BROWSERSTACK_LOCAL_IDENTIFIER -proxyHost #{config[:proxy_host]} -proxyPort #{config[:proxy_port]}"] }
   end
 
   describe 'with access_key and proxy settings with credentials' do
-    let(:config) { { access_key: 'accesskey', proxy_host: 'localhost', proxy_port: 1234, proxy_user: 'user', proxy_pass: 'pass' } }
+    let(:config) { { os: 'linux', access_key: 'accesskey', proxy_host: 'localhost', proxy_port: 1234, proxy_user: 'user', proxy_pass: 'pass' } }
 
     it_behaves_like 'installs browserstack local'
     it { should include_sexp [:cmd, "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal -d start #{config[:access_key]} -localIdentifier $BROWSERSTACK_LOCAL_IDENTIFIER -proxyHost #{config[:proxy_host]} -proxyPort #{config[:proxy_port]} -proxyUser #{config[:proxy_user]} -proxyPass #{config[:proxy_pass]}"] }
