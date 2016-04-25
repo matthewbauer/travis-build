@@ -26,7 +26,7 @@ describe Travis::Build::Addons::BrowserStack, :sexp do
   describe 'without access_key' do
     let(:config) { {} }
 
-    it { should include_sexp [:echo, "You provided an invalid access_key.", ansi: :red] }
+    it { should include_sexp [:echo, "access_key is invalid.", ansi: :red] }
   end
 
   describe 'with access_key' do

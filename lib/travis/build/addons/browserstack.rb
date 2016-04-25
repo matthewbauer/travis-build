@@ -15,23 +15,27 @@ module Travis
           browserstack_key = access_key.to_s
           sh.fold "browserstack.local.install" do
             if browserstack_key.empty?
-              sh.echo "You provided an invalid access_key.", ansi: :red
+              sh.echo "access_key is invalid.", ansi: :red
               return
             end
 
             sh.echo "Installing BrowserStack Local", ansi: :yellow
             sh.if "$(uname) = 'Linux'" do
               bin_package = "#{BROWSERSTACK_BIN_FILE}-linux-x64.zip"
-              bin_url = "#{BROWSERSTACK_BIN_URL}/#{bin_package}"
-
-              sh.cmd "mkdir -p #{BROWSERSTACK_HOME}"
-              sh.cmd "wget -O /tmp/#{bin_package} #{bin_url}", echo: true, timing: true, retry: true
-              sh.cmd "unzip -d #{BROWSERSTACK_HOME}/ /tmp/#{bin_package} 2>&1 > /dev/null", echo: false
-              sh.chmod "+x", "#{BROWSERSTACK_HOME}/#{BROWSERSTACK_BIN_FILE}", echo: false
+            end
+            sh.elif "$(uname) = 'Darwin'" do
+              bin_package = "#{BROWSERSTACK_BIN_FILE}-darwin-x64.zip"
             end
             sh.else do
               sh.echo "Unsupported platform: $TRAVIS_OS_NAME.", ansi: :yellow
+              return
             end
+
+            bin_url = "#{BROWSERSTACK_BIN_URL}/#{bin_package}"
+            sh.cmd "mkdir -p #{BROWSERSTACK_HOME}"
+            sh.cmd "wget -O /tmp/#{bin_package} #{bin_url}", echo: true, timing: true, retry: true
+            sh.cmd "unzip -d #{BROWSERSTACK_HOME}/ /tmp/#{bin_package} 2>&1 > /dev/null", echo: false
+            sh.chmod "+x", "#{BROWSERSTACK_HOME}/#{BROWSERSTACK_BIN_FILE}", echo: false
           end
 
           sh.fold 'browserstack.local.start' do
@@ -90,17 +94,17 @@ module Travis
         private
           def access_key
             key = config[:access_key] || config[:accessKey]
-            (!key.nil? && key.match(/^[a-zA-Z0-9]+$/)) ? key : nil
+            key if key.to_s =~ /^[a-zA-Z0-9]+$/
           end
 
           def verbose
-            v = config[:verbose] || config[:v]
-            (!v.nil? && v.to_s == 'true')
+            verbose = config[:verbose] || config[:v]
+            (verbose.to_s == 'true')
           end
 
           def force
-            f = config[:force]
-            (!f.nil? && f.to_s == 'true')
+            force = config[:force]
+            (force.to_s == 'true')
           end
 
           def only
@@ -122,13 +126,13 @@ module Travis
           end
 
           def force_local
-            f = config[:force_local] || config[:forceLocal]
-            (!f.nil? && f.to_s == 'true')
+            force_local = config[:force_local] || config[:forceLocal]
+            (force_local.to_s == 'true')
           end
 
           def only_automate
-            oa = config[:only_automate] || config[:onlyAutomate]
-            (!oa.nil? && oa.to_s == 'true')
+            only_automate = config[:only_automate] || config[:onlyAutomate]
+            (only_automate.to_s == 'true')
           end
 
           def proxy_host
