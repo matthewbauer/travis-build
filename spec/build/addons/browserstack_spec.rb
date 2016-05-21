@@ -17,7 +17,7 @@ describe Travis::Build::Addons::BrowserStack, :sexp do
     it { should include_sexp [:cmd, "unzip -d #{described_class::BROWSERSTACK_HOME}/ /tmp/#{zip_package} 2>&1 > /dev/null"] }
     it { should include_sexp [:chmod, ["+x", "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal"]] }
 
-    it 'sets BROWSERSTACK_KEY and BROWSERSTACK_LOCAL' do
+    it 'sets BROWSERSTACK_ACCESSKEY and BROWSERSTACK_LOCAL' do
       should include_sexp [:export, ["#{described_class::ENV_KEY}", config[:access_key]]]
       should include_sexp [:export, ["#{described_class::ENV_LOCAL}", 'true']]
     end

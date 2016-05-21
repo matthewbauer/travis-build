@@ -8,7 +8,7 @@ module Travis
         BROWSERSTACK_HOME = '$HOME/.browserstack'
         BROWSERSTACK_BIN_FILE = 'BrowserStackLocal'
         BROWSERSTACK_BIN_URL = 'https://www.browserstack.com/browserstack-local'
-        ENV_KEY = 'BROWSERSTACK_KEY'
+        ENV_KEY = 'BROWSERSTACK_ACCESSKEY'
         ENV_LOCAL = 'BROWSERSTACK_LOCAL'
 
         def before_before_script
