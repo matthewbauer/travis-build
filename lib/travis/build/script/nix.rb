@@ -29,11 +29,10 @@ module Travis
           if config[:os] == 'linux'
             sh.cmd "sudo mount -o remount,exec /run"
             sh.cmd "sudo mount -o remount,exec /run/user"
-            sh.cmd "sudo mkdir -p -m 0755 /nix/"
-            sh.cmd "sudo chown $USER /nix/"
-            # Set nix config dir and make config Hydra compatible
-            sh.cmd "echo 'build-max-jobs = 4' | sudo tee /etc/nix/nix.conf > /dev/null"
           end
+
+          sh.cmd "sudo mkdir -p /etc/nix"
+          sh.cmd 'echo "trusted-users = root $USER" | sudo tee -a /etc/nix/nix.conf > /dev/null'
         end
 
         def setup
